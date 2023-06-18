@@ -1,14 +1,21 @@
 const express = require('express');
+
+const morgan = require('morgan');
 const app = express();
+
 const tourRout = require('./routes/tourRoute');
 const userRout = require('./routes/userRoute');
 // 1 Middleware
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'))
+}
+
 app.use(express.json());
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
-app.use(express.static(`${__dirname}/public`))
+app.use(express.static(`${__dirname}/public`));
 // app.get('/',(req,res)=>{
 //   res.status(200).json({'message':'Hello from the server side !'})
 // })
@@ -23,4 +30,4 @@ app.use(express.static(`${__dirname}/public`))
 app.use('/api/v1/tours', tourRout);
 app.use('/api/v1/users', userRout);
 
-module.exports=app
+module.exports = app;
