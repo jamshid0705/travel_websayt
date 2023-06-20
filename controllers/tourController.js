@@ -24,7 +24,11 @@ const Tour = require('../models/tourModel');
 // get tour method
 exports.getTours = async (req, res) => {
   try {
-    const allTour = await Tour.find();
+    const reqObj = { ...req.query };
+    const fields = ['page', 'limit', 'sort', 'fields'];
+    fields.forEach((el) => delete reqObj[el]);
+    console.log(reqObj); // ? dan keyingi qiymatlarni oladi
+    const allTour = await Tour.find(reqObj);
     res.status(200).json({
       status: 'success',
       results: allTour.length,
@@ -72,41 +76,22 @@ exports.addTour = async (req, res) => {
   } catch (error) {
     res.status(400).json({
       status: 'fail',
-      message: error
+      message: error,
     });
   }
 };
 
 // update tour method
-exports.updateTour =async (req, res) => {
+exports.updateTour = async (req, res) => {
   try {
-    const tour=await Tour.findByIdAndUpdate(req.params.id,req.body,{
-      new:true,
-      runValidators:true
-    })
-     res.status(200).json({
-       status: 'success',
-       data: {
-         tour
-       },
-     });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
     });
-  }
- 
-};
-
-//delete tour method
-exports.deleteTour =async (req, res) => {
-  try {
-    await Tour.findByIdAndDelete(req.params.id)
-    res.status(204).json({
+    res.status(200).json({
       status: 'success',
       data: {
-        message:"success"
+        tour,
       },
     });
   } catch (error) {
@@ -115,5 +100,22 @@ exports.deleteTour =async (req, res) => {
       message: error,
     });
   }
- 
+};
+
+//delete tour method
+exports.deleteTour = async (req, res) => {
+  try {
+    await Tour.findByIdAndDelete(req.params.id);
+    res.status(204).json({
+      status: 'success',
+      data: {
+        message: 'success',
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'fail',
+      message: error,
+    });
+  }
 };

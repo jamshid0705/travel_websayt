@@ -133,11 +133,5 @@
     "imageCover": "tour-9-cover.jpg",
     "images": ["tour-9-1.jpg", "tour-9-2.jpg", "tour-9-3.jpg"],
     "startDates": ["2021-12-16,10:00", "2022-01-16,10:00", "2022-12-12,10:00"]
-  },
-  { "id": 9, "name": "Jamshid", "quentity": "easy", "description": "This tour is very interesting !" },
-  { "id": 10, "name": "Jamshid", "quentity": "easy", "description": "This tour is very interesting !" },
-  { "id": 11, "name": "Jamshid", "quentity": "easy", "description": "This tour is very interesting !" },
-  { "id": 12, "name": "Jamshid", "quentity": "easy", "description": "This tour is very interesting !" },
-  { "id": 13, "name": "Jamshid", "quentity": "easy", "description": "This tour is very interesting !" },
-  { "id": 14, "name": "Jamshid", "quentity": "easy", "description": "This tour is very interesting !", "price": 300 }
+  }
 ]
