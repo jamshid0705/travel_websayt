@@ -21,14 +21,64 @@ const Tour = require('../models/tourModel');
 //   }
 //   next()
 // }
+
+// top 5 cheap
+exports.topCheap=async(req,res,next)=>{
+  req.query.limit=5
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,ratingsAverage,difficulty,price,durations,summary';
+  next()
+}
+
 // get tour method
 exports.getTours = async (req, res) => {
   try {
+    // Queryni qurish
+
+    /////////////// 1 filter //////////////
     const reqObj = { ...req.query };
     const fields = ['page', 'limit', 'sort', 'fields'];
     fields.forEach((el) => delete reqObj[el]);
-    console.log(reqObj); // ? dan keyingi qiymatlarni oladi
-    const allTour = await Tour.find(reqObj);
+
+    //////////2 advance filter /////////////
+    // ? dan keyingi qiymatlarni oladi
+    let queryString = JSON.stringify(reqObj);
+    queryString = queryString.replace(/\bgte|gt|lte|lt\b/g, (val) => `$${val}`);
+    let query = Tour.find(JSON.parse(queryString));
+
+    /////////// 3 Sort ///////////
+    if(req.query.sort){
+      const newQuery=req.query.sort.split(',').join(' ')
+      query = query.sort(newQuery);
+      // query('price ratingsAverage')
+    }else{
+      query=query.sort('-createAt')
+    }
+
+    ///////// 4 fields  ///////////////
+    if(req.query.fields){
+      const field=req.query.fields.split(',').join(' ')
+      query=query.select(field)
+      // select('name price difficulty')
+    }else{
+      query=query.select('-__v')
+    }
+
+    ///////// 5 pagination ////////////
+    const page=req.query.page*1 || 1
+    const limit=req.query.limit*1 || 10
+    const skip=(page-1)*limit
+
+    query=query.skip(skip).limit(limit)
+
+    if(req.query.page){
+      const a=await Tour.countDocuments() // tour ni length ni beradi
+      if(skip>=a){
+        throw new Error('Bunday page mavjud emas !')
+      }
+    }
+
+    const allTour = await query;
     res.status(200).json({
       status: 'success',
       results: allTour.length,
