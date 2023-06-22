@@ -1,5 +1,6 @@
 const Tour = require('../models/tourModel');
 const Apifeatures = require('../utility/apiFeatures');
+const catchAsync=require('./../utility/catchAsync')
 // middlewares
 // exports.checkId = (req, res, next, val) => { // tushunmovchilik bor
 //   console.log(`This data is id: ${val}`);
@@ -31,8 +32,8 @@ exports.topCheap = async (req, res, next) => {
 };
 
 // get tour method
-exports.getTours = async (req, res) => {
-  try {
+exports.getTours =catchAsync(async (req, res,next) => {
+  
     // Queryni qurish
 
     // /////////////// 1 filter //////////////
@@ -88,17 +89,10 @@ exports.getTours = async (req, res) => {
         allTour,
       },
     });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
+});
 
 // get id tour method
-exports.getTourId = async (req, res) => {
-  try {
+exports.getTourId =catchAsync( async (req, res,next) => {
     const newTour = await Tour.findById(req.params.id);
     // const newTour=await Tour.findOne({_id:req.params.id})
     res.status(200).json({
@@ -107,35 +101,21 @@ exports.getTourId = async (req, res) => {
         newTour,
       },
     });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
+});
 
 // post tour method
-exports.addTour = async (req, res) => {
-  try {
-    const newTour = await Tour.create(req.body);
+exports.addTour =catchAsync( async (req, res,next) => {
+   const newTour = await Tour.create(req.body);
     res.status(201).json({
       status: 'success',
       data: {
         tour: newTour,
       },
     });
-  } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
+});
 
 // update tour method
-exports.updateTour = async (req, res) => {
-  try {
+exports.updateTour =catchAsync( async (req, res,next) => {
     const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -146,17 +126,10 @@ exports.updateTour = async (req, res) => {
         tour,
       },
     });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
+});
 
 //delete tour method
-exports.deleteTour = async (req, res) => {
-  try {
+exports.deleteTour = catchAsync(async (req, res,next) => {
     await Tour.findByIdAndDelete(req.params.id);
     res.status(204).json({
       status: 'success',
@@ -164,16 +137,10 @@ exports.deleteTour = async (req, res) => {
         message: 'success',
       },
     });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
+  
+});
 
-exports.getTourStates = async (req, res) => {
-  try {
+exports.getTourStates =catchAsync( async (req, res,next) => {
     const state = await Tour.aggregate([
       { $match: { price: { $gte:0 } } },
       {
@@ -197,16 +164,9 @@ exports.getTourStates = async (req, res) => {
         state,
       },
     });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
+});
 
-exports.getMonthYear = async (req, res) => {
-  try {
+exports.getMonthYear =catchAsync( async (req, res,next) => {
     const year = req.params.year;
     const yearAgg = await Tour.aggregate([
       {
@@ -245,10 +205,4 @@ exports.getMonthYear = async (req, res) => {
         yearAgg,
       },
     });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
+});

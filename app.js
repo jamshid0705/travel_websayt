@@ -1,8 +1,9 @@
 const express = require('express');
-
 const morgan = require('morgan');
 const app = express();
 
+const globalErrorHandler=require('./controllers/errorController')
+const AppError=require('./utility/appError')
 const tourRout = require('./routes/tourRoute');
 const userRout = require('./routes/userRoute');
 // 1 Middleware
@@ -29,5 +30,13 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use('/api/v1/tours', tourRout);
 app.use('/api/v1/users', userRout);
+
+// url dagi error ni catch qilish un
+app.all('*',(req,res,next)=>{
+  next(new AppError(`Can not find this url ${req.originalUrl}`,404))
+})
+
+// globalni errorni catch qilish
+app.use(globalErrorHandler)
 
 module.exports = app;
