@@ -1,5 +1,13 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+
+
+process.on('uncaughtException',(err)=>{
+  console.log('Uncaught Exception Error ...')
+  console.log(err.name,err.message)
+  process.exit()
+})
+
 dotenv.config({ path: './config.env' });
 const app = require('./app');
 
@@ -14,18 +22,26 @@ mongoose
   .then(() => {
     console.log('DB connection successful!');
   })
-  .catch((err) => {
-    console.log('DB connection fail !', err);
-  });
+  // .catch((err) => {
+  //   console.log('DB connection fail !',err);
+  // });
 
 // addTour.save().then(doc=>{
-//   console.log('This data saved !')
+  // console.log('This data saved !')
 // }).catch(err=>{
 //   console.log('ERROR:',err)
 // })
 // console.log(process.env)
 const PORT = process.env.PORT || 3000;
 // 4 start server
-app.listen(PORT, () => {
+const server=app.listen(PORT, () => {
   console.log(`App running on port ${PORT}...`);
+});
+
+process.on('unhandledRejection',err=>{
+  console.log('Unhandled Rejection Error...')
+  console.log(err.name)
+  server.close(()=>{
+    process.exit(1)
+  })
 });

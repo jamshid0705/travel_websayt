@@ -1,6 +1,7 @@
 const Tour = require('../models/tourModel');
 const Apifeatures = require('../utility/apiFeatures');
 const catchAsync=require('./../utility/catchAsync')
+const AppError=require('./../utility/appError')
 // middlewares
 // exports.checkId = (req, res, next, val) => { // tushunmovchilik bor
 //   console.log(`This data is id: ${val}`);
@@ -95,6 +96,11 @@ exports.getTours =catchAsync(async (req, res,next) => {
 exports.getTourId =catchAsync( async (req, res,next) => {
     const newTour = await Tour.findById(req.params.id);
     // const newTour=await Tour.findOne({_id:req.params.id})
+
+    if(!newTour){
+      return next(new AppError('Not found this ID',404))
+    }
+
     res.status(200).json({
       status: 'success',
       data: {
@@ -120,6 +126,10 @@ exports.updateTour =catchAsync( async (req, res,next) => {
       new: true,
       runValidators: true,
     });
+
+    if(!tour){
+      return next(new AppError('Not found this ID',404))
+    }
     res.status(200).json({
       status: 'success',
       data: {
@@ -130,7 +140,12 @@ exports.updateTour =catchAsync( async (req, res,next) => {
 
 //delete tour method
 exports.deleteTour = catchAsync(async (req, res,next) => {
-    await Tour.findByIdAndDelete(req.params.id);
+    const newTour=await Tour.findByIdAndDelete(req.params.id);
+
+    if(!newTour){
+      return next(new AppError('Not found this ID',404))
+    }
+
     res.status(204).json({
       status: 'success',
       data: {
