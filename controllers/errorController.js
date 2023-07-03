@@ -27,6 +27,10 @@ const ValidatorError=(err)=>{
   return new AppError(message,400)
 }
 
+const handlerJWT=(err)=>new AppError('Invalid token. Please log in again !',401)
+
+const handlerJWTExpired=(err)=>new AppError('JWT expired. Please log in again !',401)
+
 module.exports=(err,req,res,next)=>{
   err.statusCode=err.statusCode || 500
   err.status=err.status || 'error'
@@ -43,7 +47,13 @@ module.exports=(err,req,res,next)=>{
     if(error.name==='ValidationError') {
        console.log('99999999999')
       error=ValidatorError(error)
-   }
+    }
+    if(error.name==="JsonWebTokenError"){
+      error=handlerJWT(error)
+    }
+    if(error.name==='TokenExpiredError'){
+      error=handlerJWTExpired(error)
+    }
 
     sendErrorPro(error,res)
   }
