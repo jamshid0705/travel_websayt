@@ -44,7 +44,12 @@ const userSchema=new mongoose.Schema({
     default:Date.now()
   },
   resetTokenHash:String,
-  resetTokenVaqt:Date
+  resetTokenVaqt:Date,
+  active:{
+    type:Boolean,
+    default:true,
+    select:false
+  }
 })
 
 // document middleware
@@ -56,15 +61,21 @@ userSchema.pre('save',async function(next){
   next()
 })
 
+// query middleware
+userSchema.pre(/^find/,function(next){
+  this.find({active:{$ne:false}})
+  next()
+})
+
 // reset token yasash
 userSchema.methods.hashResetToken=function(){
   const token=crypto.randomBytes(32).toString('hex')
-  // console.log(token)
+  console.log(typeof token)
   const resetToken=crypto.createHash('sha256').update(token).digest('hex')
   // console.log(resetToken)
   this.resetTokenHash=resetToken
   this.resetTokenVaqt=Date.now()+10*60*1000
-
+  console.log(this.resetTokenVaqt)
   return token
 }
 const User=mongoose.model('users',userSchema)

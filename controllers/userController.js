@@ -12,6 +12,30 @@ exports.getUsers =catchAsync( async(req, res,next) => {
       },
     });
 });
+
+exports.updateMe=catchAsync(async(req,res,next)=>{
+  if(req.body.password || req.body.passwordConfirm){
+    return next(new AppError('Bu updatePassword urli emas. Uning url /updateMyPassword'))
+  }
+  
+  const user=await User.findByIdAndUpdate(req.user.id,req.body,{new:true,runValidators:true})
+
+  res.status(200).json({
+    status:'success',
+    data:{
+      user
+    }
+  })
+})
+
+exports.deleteMe=catchAsync(async(req,res,next)=>{
+  await User.findByIdAndUpdate(req.user._id,{active:false})
+
+  res.status(204).json({
+    status:'success',
+    data:null
+  })
+})
 // get id user
 exports.getUserId = (req, res) => {
   res.status(500).json({
