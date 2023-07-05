@@ -38,7 +38,7 @@ class Apifeatures {
 
     this.query = this.query.skip(skip).limit(limit);
 
-    return this;
+    return this.query;
   }
 }
 

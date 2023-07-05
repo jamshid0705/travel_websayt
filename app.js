@@ -1,22 +1,52 @@
 const express = require('express');
 const morgan = require('morgan');
+const rateLimit=require('express-rate-limit')
+const helmet=require('helmet')
+const mongoSanitize=require('express-mongo-sanitize')
+const xss=require('xss-clean')
+const hpp=require('hpp')
 const app = express();
 
 const globalErrorHandler=require('./controllers/errorController')
 const AppError=require('./utility/appError')
 const tourRout = require('./routes/tourRoute');
 const userRout = require('./routes/userRoute');
-// 1 Middleware
+
+// Global Middleware
+
+// http securty
+app.use(helmet())
+
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
 
-app.use(express.json());
+// request limit
+app.use('/api',rateLimit({
+  windowMs:60*60*1000,
+  max:100,
+  message:'Siz juda ko\`p so\`rov yubordingiz. Iltimos bir ozdan so\`ng harakat qilib ko\`ring !'
+}))
+
+// body parser
+app.use(express.json({limit:'10kb'}));
+
+// example middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  console.log(req.headers)
   next();
 });
+
+// request ga kelgan har xil url hujumlardan saqlaydi
+app.use(mongoSanitize())
+
+// requestni body siga malumot o'rniga html fayllar yuborish orqali qilingan hujum misol: "name":"<div id='23'>jamshid</div>" buni buzib saqlaydi
+app.use(xss())
+
+// url dagi xatolar
+app.use(hpp())
+
+// static fayl
 app.use(express.static(`${__dirname}/public`));
 // app.get('/',(req,res)=>{
 //   res.status(200).json({'message':'Hello from the server side !'})

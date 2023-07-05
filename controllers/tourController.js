@@ -81,7 +81,8 @@ exports.getTours =catchAsync(async (req, res,next) => {
     // }
 
     const features = new Apifeatures(Tour.find(), req.query).filter().sort().limitFields().paginate();
-    const allTour = await features.query;
+   
+    const allTour = await features;
 
     res.status(200).json({
       status: 'success',
