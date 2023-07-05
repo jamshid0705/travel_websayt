@@ -94,7 +94,7 @@ exports.getTours =catchAsync(async (req, res,next) => {
 });
 
 // get id tour method
-exports.getTourId =catchAsync( async (req, res,next) => {
+exports.getTourId = catchAsync( async (req, res,next) => {
     const newTour = await Tour.findById(req.params.id);
     // const newTour=await Tour.findOne({_id:req.params.id})
 
