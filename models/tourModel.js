@@ -102,7 +102,7 @@ const tourSchema = new mongoose.Schema({
   ],
   guides:[
     {type:mongoose.Schema.ObjectId,
-     ref:'users'}
+     ref:'user'}
   ]
 },{
   toJSON:{virtuals:true},
@@ -113,6 +113,12 @@ const tourSchema = new mongoose.Schema({
 tourSchema.virtual('durationsWeek').get(function () {
   return this.duration / 7;
 });
+
+tourSchema.virtual('reviews',{
+  ref:'review',
+  foreignField:'tour',
+  localField:'_id'
+})
 
 // document middleware data bazaga borishdan oldin qo'shimcha qo'shadi
 tourSchema.pre('save',function(next){
@@ -143,5 +149,5 @@ tourSchema.pre('aggregate',function(next){
   next()
 })
 
-const Tour = mongoose.model('Tour', tourSchema);
+const Tour = mongoose.model('tour', tourSchema);
 module.exports = Tour;

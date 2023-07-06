@@ -16,7 +16,7 @@ const reviewSchema=mongoose.Schema({
   },
   user:{
     type:mongoose.Schema.ObjectId,
-    ref:'users',
+    ref:'user',
     required:[true,'review userga tegishli bo\`lishi kerak']
   },
   tour:{
@@ -29,5 +29,11 @@ const reviewSchema=mongoose.Schema({
   toObject:{virtuals:true}
 })
 
-const review=mongoose.model('reviews',reviewSchema)
+// document muddleware
+reviewSchema.pre(/^find/,function(next){
+  this.populate({path:'user',select:' -__v -createAt'}).populate({path:"tour",select:'name duration maxGroupSize price difficulty'})
+  next()
+})
+
+const review=mongoose.model('review',reviewSchema)
 module.exports=review

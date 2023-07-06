@@ -86,7 +86,6 @@ exports.protect=catchAsync(async(req,res,next)=>{
 exports.role=(...roles)=>{
 
   return (req,res,next)=>{
-      console.log("rolesssssssssssssss",roles)
     if(!roles.includes(req.user.role)){
       return next(new AppError('Sizga bu ishni bajarish mumkin emas !',401))
     }

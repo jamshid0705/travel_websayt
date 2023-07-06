@@ -78,5 +78,5 @@ userSchema.methods.hashResetToken=function(){
   console.log(this.resetTokenVaqt)
   return token
 }
-const User=mongoose.model('users',userSchema)
+const User=mongoose.model('user',userSchema)
 module.exports=User

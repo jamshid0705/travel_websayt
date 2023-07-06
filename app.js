@@ -11,6 +11,7 @@ const globalErrorHandler=require('./controllers/errorController')
 const AppError=require('./utility/appError')
 const tourRout = require('./routes/tourRoute');
 const userRout = require('./routes/userRoute');
+const reviewRout=require('./routes/reviewRout')
 
 // Global Middleware
 
@@ -61,6 +62,7 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use('/api/v1/tours', tourRout);
 app.use('/api/v1/users', userRout);
+app.use('/api/v1/reviews',reviewRout)
 
 // url dagi error ni catch qilish un
 app.all('*',(req,res,next)=>{
