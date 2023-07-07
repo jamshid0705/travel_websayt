@@ -31,7 +31,7 @@ const reviewSchema=mongoose.Schema({
 
 // document muddleware
 reviewSchema.pre(/^find/,function(next){
-  this.populate({path:'user',select:' -__v -createAt'}).populate({path:"tour",select:'name duration maxGroupSize price difficulty'})
+  this.populate({path:'user',select:' -__v -createAt'}).populate({path:"tour",select:'name price'})
   next()
 })
 

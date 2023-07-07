@@ -1,17 +1,7 @@
 const User = require('../models/userModel');
 const catchAsync=require('./../utility/catchAsync')
 const AppError=require('./../utility/appError')
-// get all users
-exports.getUsers =catchAsync( async(req, res,next) => {
-  const user = await User.find()
-  res.status(200).json({
-      status: 'success',
-      results: user.length,
-      data: {
-        user,
-      },
-    });
-});
+const factory=require('./handlerFactory')
 
 exports.updateMe=catchAsync(async(req,res,next)=>{
   if(req.body.password || req.body.passwordConfirm){
@@ -36,31 +26,15 @@ exports.deleteMe=catchAsync(async(req,res,next)=>{
     data:null
   })
 })
-// get id user
-exports.getUserId = (req, res) => {
-  res.status(500).json({
-    status: 'Error',
-    message: 'This url was not found !',
-  });
-};
-// update user
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'Error',
-    message: 'This url was not found !',
-  });
-};
 // add user
 exports.addUser = (req, res) => {
   res.status(500).json({
     status: 'Error',
-    message: 'This url was not found !',
+    message: 'Siz faqat /sign up url orqali ro\'yhatdan o\'tishingiz mumkin !',
   });
 };
-// delete user
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'Error',
-    message: 'This url was not found !',
-  });
-};
+
+exports.getUsers =factory.getAll(User)
+exports.getUserId = factory.getOneId(User)
+exports.updateUser = factory.updateOne(User)
+exports.deleteUser = factory.deleteOne(User)

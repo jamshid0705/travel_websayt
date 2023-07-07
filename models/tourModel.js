@@ -136,7 +136,10 @@ tourSchema.pre(/^find/,function(next){
   this.populate({path:'guides',select:'-__v -passwordChangedDate'})
   next()
 })
-
+// tourSchema.pre(/^find/,function(next){
+//   this.populate('reviews')
+//   next()
+// })
 tourSchema.pre(/^find/,function(next){
   this.find({secretTour:{$ne:true}})
   next()
