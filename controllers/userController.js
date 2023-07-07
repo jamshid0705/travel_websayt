@@ -3,6 +3,11 @@ const catchAsync=require('./../utility/catchAsync')
 const AppError=require('./../utility/appError')
 const factory=require('./handlerFactory')
 
+exports.getMe=(req,res,next)=>{
+  req.params.id=req.user.id
+  next()
+}
+
 exports.updateMe=catchAsync(async(req,res,next)=>{
   if(req.body.password || req.body.passwordConfirm){
     return next(new AppError('Bu updatePassword urli emas. Uning url /updateMyPassword'))
@@ -26,6 +31,8 @@ exports.deleteMe=catchAsync(async(req,res,next)=>{
     data:null
   })
 })
+
+
 // add user
 exports.addUser = (req, res) => {
   res.status(500).json({

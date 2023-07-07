@@ -5,8 +5,10 @@ const authController=require('../controllers/authController')
 const route=express.Router({mergeParams:true})
 // post  /:tourId/review
 // get   /:tourId/review
+// middleware
+route.use(authController.protect)
 
-route.route('/').get(reviewController.getAllReviews).post(authController.protect,authController.role('user'),reviewController.sendIdAddReview,reviewController.addReviews)
-route.route('/:id').patch(reviewController.updateReviews).delete(reviewController.deleteReviews).get(reviewController.getOneReviews)
+route.route('/').get(reviewController.getAllReviews).post(authController.role('user'),reviewController.sendIdAddReview,reviewController.addReviews)
+route.route('/:id').patch(authController.role('user','admin'),reviewController.updateReviews).delete(authController.role('user','admin'),reviewController.deleteReviews).get(reviewController.getOneReviews)
 
 module.exports=route
