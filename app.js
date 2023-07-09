@@ -1,4 +1,5 @@
 const express = require('express');
+const path=require('path')
 const morgan = require('morgan');
 const rateLimit=require('express-rate-limit')
 const helmet=require('helmet')
@@ -12,8 +13,13 @@ const AppError=require('./utility/appError')
 const tourRout = require('./routes/tourRoute');
 const userRout = require('./routes/userRoute');
 const reviewRout=require('./routes/reviewRout')
+const overviewRout=require('./routes/overviewRout')
 
 // Global Middleware
+app.set('view engine','pug')
+app.set('views',path.join(__dirname,'views'))
+// serving static file
+app.use(express.static(path.join(__dirname,'public')))
 
 // http securty
 app.use(helmet())
@@ -49,6 +55,7 @@ app.use(hpp())
 
 // static fayl
 app.use(express.static(`${__dirname}/public`));
+
 // app.get('/',(req,res)=>{
 //   res.status(200).json({'message':'Hello from the server side !'})
 // })
@@ -59,7 +66,7 @@ app.use(express.static(`${__dirname}/public`));
 // app.post('/api/v1/tours', addTour);
 // app.patch('/api/v1/tours/:id', updateTour);
 // app.delete('/api/v1/tours/:id', deleteTour);
-
+app.use('/',overviewRout)
 app.use('/api/v1/tours', tourRout);
 app.use('/api/v1/users', userRout);
 app.use('/api/v1/reviews',reviewRout)
