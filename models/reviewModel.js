@@ -32,7 +32,7 @@ const reviewSchema=mongoose.Schema({
 
 // document muddleware
 reviewSchema.pre(/^find/,function(next){
-  this.populate({path:'user',select:' -__v -createAt'}).populate({path:"tour",select:'name price'})
+  this.populate({path:'user',select:'name photo'})
   next()
 })
 
