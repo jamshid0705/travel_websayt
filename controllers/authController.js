@@ -10,6 +10,7 @@ const signToken=(id)=>{
   return jwt.sign({id},process.env.JSON_SECRET,{expiresIn:process.env.JSON_EXPIRES_IN})
 }
 
+// cookie ga token yuborish
 const sendToken=(user,statusCode,res)=>{
   const token=signToken(user._id)
 
@@ -23,7 +24,7 @@ const sendToken=(user,statusCode,res)=>{
   res.cookie('jwt',token,cookieOption)
   user.password=undefined
     res.status(statusCode).json({
-      status:'seccess',
+      status:'success',
       token:token,
       data:{
         user
@@ -52,6 +53,15 @@ exports.login=catchAsync(async(req,res,next)=>{
   // 3 new token jo'natish
   sendToken(user,200,res)
 
+})
+
+///////////////// logout ///////////////////////
+exports.logout=catchAsync((req,res,next)=>{
+  res.cookie('jwt','loggedout',{
+    expiresIn:new Date(Date.now())+10*1000,
+    httpOnly:true
+  })
+  res.status(200).json({status:'success'})
 })
 
 ///////////////////// protect middleware //////////////////
@@ -85,10 +95,10 @@ exports.protect=catchAsync(async(req,res,next)=>{
 })
 
 //////////////////// is login in /////////////////////
-exports.isLoginIn=catchAsync(async(req,res,next)=>{
-  // 1 token bor yo'qligini tekshirish
-  console.log(req.cookies.jwt)
-  if(req.cookies.jwt){
+exports.isLoginIn=async(req,res,next)=>{
+ 
+  try {
+    if(req.cookies.jwt){
       // 2 token ni tekshirish
     const verifyToken=await jwt.verify(req.cookies.jwt,process.env.JSON_SECRET)
     // 3 tokendan id ni olib o'sha id lik userni topish
@@ -101,12 +111,15 @@ exports.isLoginIn=catchAsync(async(req,res,next)=>{
     if(newUser.passwordChangedDate.getTime()/1000>verifyToken.iat){
       return next()
     }
-    console.log(res)
+    // console.log(res)
     res.locals.user=newUser
+    return next()
+    }
+  } catch (error) {
     return next()
   }
   next()
-})
+}
 
 //////////////////// role middleware /////////////////
 exports.role=(...roles)=>{
