@@ -7,6 +7,7 @@ const mongoSanitize=require('express-mongo-sanitize')
 const xss=require('xss-clean')
 const hpp=require('hpp')
 const app = express();
+const cookieParser=require('cookie-parser')
 
 const globalErrorHandler=require('./controllers/errorController')
 const AppError=require('./utility/appError')
@@ -20,7 +21,7 @@ app.set('view engine','pug')
 app.set('views',path.join(__dirname,'views'))
 // serving static file
 app.use(express.static(path.join(__dirname,'public')))
-
+app.use(cookieParser())
 // http securty
 app.use(helmet())
 
@@ -41,6 +42,7 @@ app.use(express.json({limit:'10kb'}));
 // example middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  console.log(req.cookies)
   next();
 });
 

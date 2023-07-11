@@ -60,6 +60,8 @@ exports.protect=catchAsync(async(req,res,next)=>{
   let token
   if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
     token = req.headers.authorization.split(' ')[1]
+  }else if(req.cookies.jwt){
+    token=req.cookies.jwt
   }
   if(!token || token==='null'){
     return next(new AppError('Token y\`oq! Iltimos tekshirib ko\`ring !',401))
@@ -79,6 +81,30 @@ exports.protect=catchAsync(async(req,res,next)=>{
   }
 
   req.user=newUser
+  next()
+})
+
+//////////////////// is login in /////////////////////
+exports.isLoginIn=catchAsync(async(req,res,next)=>{
+  // 1 token bor yo'qligini tekshirish
+  console.log(req.cookies.jwt)
+  if(req.cookies.jwt){
+      // 2 token ni tekshirish
+    const verifyToken=await jwt.verify(req.cookies.jwt,process.env.JSON_SECRET)
+    // 3 tokendan id ni olib o'sha id lik userni topish
+    
+    const newUser=await User.findById(verifyToken.id)
+    if(!newUser){
+      return next()
+    }
+    // 4 password yangilangan bo'lsa 
+    if(newUser.passwordChangedDate.getTime()/1000>verifyToken.iat){
+      return next()
+    }
+    console.log(res)
+    res.locals.user=newUser
+    return next()
+  }
   next()
 })
 
