@@ -91,6 +91,7 @@ exports.protect=catchAsync(async(req,res,next)=>{
   }
 
   req.user=newUser
+  res.locals.user=newUser
   next()
 })
 

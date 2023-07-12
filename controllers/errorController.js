@@ -5,20 +5,38 @@ const handlerDublicateFields=(error)=>{
   return new AppError(message,400)
 }
 
-const sendErrorDev=(err,res)=>{
-  res.status(err.statusCode).json({
-    status:err.status,
-    error:err,
-    message: err.message,
-    stack:err.stack
-  })
+const sendErrorDev=(err,req,res)=>{
+  if(req.originalUrl.startsWith('/api')){
+    return res.status(err.statusCode).json({
+      status:err.status,
+      error:err,
+      message: err.message,
+      stack:err.stack
+    })
+  }
+  else{
+    console.log('ERROR',err)
+    return res.status(err.statusCode).render('error',{
+      title:'Something is wrong !',
+      msg:err.message
+    })
+  }
 }
 
-const sendErrorPro=(err,res)=>{
-  res.status(err.statusCode).json({
+const sendErrorPro=(err,req,res)=>{
+  
+  if(err){
+    console.log('ERROR',err)
+    return res.status(err.statusCode).render('error',{
+      title:'Something is wrong!',
+      msg:err.message
+    }) 
+  }
+  return res.status(err.statusCode).json({
     status:err.status,
     message: err.message
   })
+  
 }
 
 const ValidatorError=(err)=>{
@@ -36,7 +54,7 @@ module.exports=(err,req,res,next)=>{
   err.status=err.status || 'error'
 
   if(process.env.NODE_ENV==='development'){
-    sendErrorDev(err,res)
+    sendErrorDev(err,req,res)
      console.log(err)
   } else if(process.env.NODE_ENV==='production'){
     let error={...err}
@@ -55,7 +73,7 @@ module.exports=(err,req,res,next)=>{
       error=handlerJWTExpired(error)
     }
 
-    sendErrorPro(error,res)
+    sendErrorPro(error,req,res)
   }
   
   next()

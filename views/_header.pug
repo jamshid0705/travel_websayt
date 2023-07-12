@@ -12,7 +12,7 @@ header.header
     if(user)
       //- a(href="#", class="nav__el nav__el--logout") Log out
       button.nav__el.nav__el--logout Log out  
-      a(href="#", class="nav__el")
+      a(href="/me", class="nav__el")
         img(src=`/img/users/${user.photo}`, alt=`/img/${user.photo}`, class="nav__user-img")
         span=user.name.split(' ')[0]
       script(src='/js/logout.js')  
