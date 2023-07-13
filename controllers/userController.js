@@ -2,6 +2,31 @@ const User = require('../models/userModel');
 const catchAsync=require('./../utility/catchAsync')
 const AppError=require('./../utility/appError')
 const factory=require('./handlerFactory')
+const multer=require('multer');
+
+const storageMulter = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/img/users')
+  },
+  filename: function (req, file, cb) {
+    const filename=`user-${req.user.id}-${Date.now()}.${file.mimetype.split('/')[1]}`
+    cb(null,`${filename}`)
+  }
+})
+
+const fileFilterMul=(req,file,cb)=>{
+  if(file.mimetype.startsWith('image')){
+    cb(null,true)
+  }else{
+    cb(new AppError('Image emas. Iltimos image fayl yuklang !',404),false)
+  }
+}
+
+const upload=multer({
+  storage:storageMulter,
+  fileFilter:fileFilterMul
+})
+exports.updateUserPhoto=upload.single('photo')
 
 exports.getMe=(req,res,next)=>{
   req.params.id=req.user.id
@@ -9,6 +34,8 @@ exports.getMe=(req,res,next)=>{
 }
 
 exports.updateMe=catchAsync(async(req,res,next)=>{
+  console.log(req.file)
+  console.log(req.body)
   if(req.body.password || req.body.passwordConfirm){
     return next(new AppError('Bu updatePassword urli emas. Uning url /updateMyPassword'))
   }

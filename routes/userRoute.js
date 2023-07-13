@@ -3,6 +3,7 @@ const route = express.Router();
 const userController=require('../controllers/userController')
 const authController=require('../controllers/authController')
 
+
 route.post('/signup',authController.signup)
 route.post('/login',authController.login)
 route.get('/logout',authController.logout)
@@ -15,7 +16,7 @@ route.use(authController.protect)
 
 route.get('/me',userController.getMe,userController.getUserId)
 route.patch('/updateMyPassword',authController.updatePassword)
-route.patch('/updateMe',userController.updateMe)
+route.patch('/updateMe',userController.updateUserPhoto,userController.updateMe)
 route.delete('/deleteMe',userController.deleteMe)
 
 route.use(authController.role('admin'))
