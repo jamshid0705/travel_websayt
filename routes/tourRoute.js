@@ -19,6 +19,6 @@ route.route('/agg').get(tourController.getTourStates)
 route.route('/month/:year').get(authController.protect,authController.role('admin','lead-guide','guide'),tourController.getMonthYear)
 route.route('/top-5-cheap').get(tourController.topCheap,tourController.getTours)
 
-route.route('/:id').get(tourController.getTourId).patch(authController.protect,authController.role('admin','lead-guide'),tourController.updateTour).delete(authController.protect,authController.role('admin','lead-guide'),tourController.deleteTour);
+route.route('/:id').get(tourController.getTourId).patch(authController.protect,authController.role('admin','lead-guide'),tourController.uploadTourImg,tourController.resizeTourImages,tourController.updateTour).delete(authController.protect,authController.role('admin','lead-guide'),tourController.deleteTour);
 
 module.exports = route;

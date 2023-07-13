@@ -2,7 +2,45 @@ const Tour = require('../models/tourModel');
 const AppError = require('../utility/appError');
 const catchAsync=require('./../utility/catchAsync')
 const factory=require('./handlerFactory')
+const multer=require('multer');
+const sharp=require('sharp')
 
+
+const storageMulter=multer.memoryStorage()
+
+const fileFilterMul=(req,file,cb)=>{
+  if(file.mimetype.startsWith('image')){
+    cb(null,true)
+  }else{
+    cb(new AppError('Image emas. Iltimos image fayl yuklang !',404),false)
+  }
+}
+
+const upload=multer({
+  storage:storageMulter,
+  fileFilter:fileFilterMul
+})
+
+exports.uploadTourImg=upload.fields([{name:'imageCover',maxCount:1},{name:'images',maxCount:3}])
+
+exports.resizeTourImages=catchAsync(async(req,res,next)=>{
+  console.log(req.files)
+
+  if(!req.files.imageCover || !req.files.images) return next()
+  // upload imageCover
+  req.body.imageCover=`tour-${req.params.id}-${Date.now()}-cover.jpeg`
+  await sharp(req.files.imageCover[0].buffer).resize(2000,1333).toFormat('jpeg').jpeg({quality:90}).toFile(`public/img/tours/${req.body.imageCover}`)
+  
+  req.body.images=[]
+  await Promise.all(req.files.images.map(async(el,i) => {
+    const filename=`tour-${req.params.id}-${Date.now()}-${i+1}.jpeg`
+    await sharp(req.files.images[i].buffer).resize(2000,1333).toFormat('jpeg').jpeg({quality:90}).toFile(`public/img/tours/${filename}`)
+    req.body.images.push(filename)
+  }));
+  
+  next()
+  
+})
 // top 5 cheap
 exports.topCheap = async (req, res, next) => {
   req.query.limit = 5;

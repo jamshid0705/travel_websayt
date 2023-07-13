@@ -16,7 +16,7 @@ route.use(authController.protect)
 
 route.get('/me',userController.getMe,userController.getUserId)
 route.patch('/updateMyPassword',authController.updatePassword)
-route.patch('/updateMe',userController.updateUserPhoto,userController.updateMe)
+route.patch('/updateMe',userController.updateUserPhoto,userController.resizeUserPhoto,userController.updateMe)
 route.delete('/deleteMe',userController.deleteMe)
 
 route.use(authController.role('admin'))

@@ -3,16 +3,18 @@ const catchAsync=require('./../utility/catchAsync')
 const AppError=require('./../utility/appError')
 const factory=require('./handlerFactory')
 const multer=require('multer');
+const sharp=require('sharp')
 
-const storageMulter = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'public/img/users')
-  },
-  filename: function (req, file, cb) {
-    const filename=`user-${req.user.id}-${Date.now()}.${file.mimetype.split('/')[1]}`
-    cb(null,`${filename}`)
-  }
-})
+// const storageMulter = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, 'public/img/users')
+//   },
+//   filename: function (req, file, cb) {
+//     const filename=`user-${req.user.id}-${Date.now()}.${file.mimetype.split('/')[1]}`
+//     cb(null,`${filename}`)
+//   }
+// })
+const storageMulter=multer.memoryStorage()
 
 const fileFilterMul=(req,file,cb)=>{
   if(file.mimetype.startsWith('image')){
@@ -28,6 +30,15 @@ const upload=multer({
 })
 exports.updateUserPhoto=upload.single('photo')
 
+exports.resizeUserPhoto=catchAsync(async(req,res,next)=>{
+  if(!req.file) return next()
+
+  req.file.filename=`user-${req.user.id}-${Date.now()}.jpeg`
+  await sharp(req.file.buffer).resize(500,500).toFormat('jpeg').jpeg({quality:90}).toFile(`public/img/users/${req.file.filename}`)
+
+  next()
+})
+
 exports.getMe=(req,res,next)=>{
   req.params.id=req.user.id
   next()
@@ -39,7 +50,9 @@ exports.updateMe=catchAsync(async(req,res,next)=>{
   if(req.body.password || req.body.passwordConfirm){
     return next(new AppError('Bu updatePassword urli emas. Uning url /updateMyPassword'))
   }
-  
+  if(req.file){
+    req.body.photo=req.file.filename
+  }
   const user=await User.findByIdAndUpdate(req.user.id,req.body,{new:true,runValidators:true})
 
   res.status(200).json({
