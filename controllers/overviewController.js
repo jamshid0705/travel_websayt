@@ -29,6 +29,11 @@ exports.login=catchAsync(async(req,res,next)=>{
   })
 })
 
+////////////// sign up////////////////////
+exports.signup=catchAsync(async(req,res,next)=>{
+  res.status(200).render('signup')
+})
+
 exports.getAccount=(req,res)=>{
     res.status(200).render('account',{
     title:'Your account'

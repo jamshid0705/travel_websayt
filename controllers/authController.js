@@ -11,7 +11,7 @@ const signToken=(id)=>{
 }
 
 // cookie ga token yuborish
-const sendToken=(user,statusCode,res)=>{
+const sendToken=(user,statusCode,res,req)=>{
   const token=signToken(user._id)
 
   const cookieOption={
@@ -33,17 +33,19 @@ const sendToken=(user,statusCode,res)=>{
 }
 ///////////// sign up //////////////
 exports.signup=catchAsync(async(req,res)=>{
-  try{
-    const user=await User.create(req.body)
-  // const url=`${req.protocol}://${req.get('host')}/me`
-  const url='http://127.0.0.1:3000/'
-  console.log(url)
-  await new Email(user,url).sendWelcome()
-  sendToken(user,200,res)
-  }catch(error){
-    console.log(error)
-  }
   
+  const user=await User.create(req.body)
+  // const url=`${req.protocol}://${req.get('host')}/me`
+  const token=signToken(user._id)
+  sendToken(user,200,res,req)
+  const url='http://127.0.0.1:3000/'
+  await new Email(user,url).sendWelcome()
+  
+  res.status(200).json({
+    status: 'success',
+    token: token,
+    data: user,
+  });
   
 })
 
@@ -60,7 +62,7 @@ exports.login=catchAsync(async(req,res,next)=>{
     return next(new AppError('Email yoki password xato !',401))
   }
   // 3 new token jo'natish
-  sendToken(user,200,res)
+  sendToken(user,200,res,req)
 
 })
 
@@ -201,7 +203,7 @@ exports.resentPassword=catchAsync(async(req,res,next)=>{
 
   await user.save()
   // 3 new jwt 
-  sendToken(user,200,res)
+  sendToken(user,200,res,req)
 
 })
 
@@ -218,6 +220,6 @@ exports.updatePassword=catchAsync(async(req,res,next)=>{
   user.passwordConfirm=req.body.passwordConfirm
   await user.save()
   // 4 jwt send
-  sendToken(user,200,res)
+  sendToken(user,200,res,req)
 
 })
