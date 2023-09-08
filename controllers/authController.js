@@ -4,7 +4,7 @@ const crypto=require('crypto')
 const catchAsync = require('../utility/catchAsync')
 const AppError=require('./../utility/appError')
 const User=require('../models/userModel')
-const sendEmail=require('../utility/email')
+const Email=require('../utility/email')
 
 const signToken=(id)=>{
   return jwt.sign({id},process.env.JSON_SECRET,{expiresIn:process.env.JSON_EXPIRES_IN})
@@ -33,8 +33,17 @@ const sendToken=(user,statusCode,res)=>{
 }
 ///////////// sign up //////////////
 exports.signup=catchAsync(async(req,res)=>{
-  const user=await User.create(req.body)
+  try{
+    const user=await User.create(req.body)
+  // const url=`${req.protocol}://${req.get('host')}/me`
+  const url='http://127.0.0.1:3000/'
+  console.log(url)
+  await new Email(user,url).sendWelcome()
   sendToken(user,200,res)
+  }catch(error){
+    console.log(error)
+  }
+  
   
 })
 
@@ -146,13 +155,8 @@ exports.forgotPassword=catchAsync(async(req,res,next)=>{
   await user.save({validateBeforeSave:false})
   // 3 emailga jo'natish
   const resentLink=`${req.protocol}://${req.get('host')}/api/v1/users/resetpassword/${token}`
-  const message = `<h1>Siz password reset qilish uchun quyidgi tugmani bosing</h1>><a style='color:red' href='${resentLink}'>Reset Password </a>`;
   try {
-    await sendEmail({
-    email:user.email,
-    subject:'Sizda password ni yangilash uchun 10 minut vaqt bor !',
-    message:message
-    })
+    await new Email(user,resentLink).sendResetPassword()
     res.status(200).json({
       status:"success",
       message:'Token emailga yubrildi !'
