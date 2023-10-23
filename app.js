@@ -9,6 +9,9 @@ const hpp=require('hpp')
 const app = express();
 const cookieParser=require('cookie-parser')
 
+const swaggerUI=require('swagger-ui-express')
+const swaggerJsDoc=require('swagger-jsdoc')
+
 const globalErrorHandler=require('./controllers/errorController')
 const AppError=require('./utility/appError')
 const tourRout = require('./routes/tourRoute');
@@ -24,6 +27,28 @@ app.use(express.static(path.join(__dirname,'public')))
 app.use(cookieParser())
 // http securty
 app.use(helmet())
+
+const options={
+  apis:['routes/*.js'],
+  definition:{
+    openapi: '3.0.0',
+    info:{
+      title:'Libary Api',
+      version:'1.0.0',
+      description:'A simple express Libary Api'
+    },
+    servers:[
+      {
+        url:'http://localhost:3000/api/v1/'
+      }
+    ],
+  },
+}
+
+const spec=swaggerJsDoc(options)
+
+app.use('/api-docs',swaggerUI.serve, swaggerUI.setup(spec))
+
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))

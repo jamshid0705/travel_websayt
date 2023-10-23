@@ -1,3 +1,4 @@
+
 const express = require('express');
 const route = express.Router();
 const userController=require('../controllers/userController')
@@ -12,14 +13,15 @@ route.post('/forgotpassword',authController.forgotPassword)
 route.patch('/resetpassword/:token',authController.resentPassword)
 
 // middleware route
-route.use(authController.protect)
+// route.use(authController.protect)
 
 route.get('/me',userController.getMe,userController.getUserId)
 route.patch('/updateMyPassword',authController.updatePassword)
 route.patch('/updateMe',userController.updateUserPhoto,userController.resizeUserPhoto,userController.updateMe)
 route.delete('/deleteMe',userController.deleteMe)
 
-route.use(authController.role('admin'))
+// route.use(authController.role('admin'))
+
 
 route.route('/').get( userController.getUsers).post(userController.addUser);
 route.route('/:id').get(userController.getUserId).patch(userController.updateUser).delete(userController.deleteUser);
