@@ -18,6 +18,7 @@ const tourRout = require('./routes/tourRoute');
 const userRout = require('./routes/userRoute');
 const reviewRout=require('./routes/reviewRout')
 const overviewRout=require('./routes/overviewRout')
+const bookingRoute=require('./routes/bookingRout')
 
 // Global Middleware
 app.set('view engine','pug')
@@ -97,7 +98,7 @@ app.use('/',overviewRout)
 app.use('/api/v1/tours', tourRout);
 app.use('/api/v1/users', userRout);
 app.use('/api/v1/reviews',reviewRout)
-
+app.use('/api/v1/bookings',bookingRoute)
 // url dagi error ni catch qilish un
 app.all('*',(req,res,next)=>{
   next(new AppError(`Can not find this url ${req.originalUrl}`,404))
